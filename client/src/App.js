@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, CssBaseline, Box, Typography, TextField, Button, Paper, List, ListItem, ListItemText, CircularProgress } from '@mui/material';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 
 
 function App() {
@@ -49,7 +50,13 @@ function App() {
                 <ListItem key={idx} alignItems="flex-start">
                   <ListItemText
                     primary={msg.role === 'user' ? 'You' : 'Assistant'}
-                    secondary={msg.content}
+                    secondary={
+                      msg.role === 'assistant' ? (
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      ) : (
+                        msg.content
+                      )
+                    }
                   />
                 </ListItem>
               ))}
