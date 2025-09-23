@@ -1,0 +1,19 @@
+# Node
+node_modules/
+.env
+
+# React
+client/node_modules/
+client/.env
+
+# Server
+server/node_modules/
+server/.env
+
+# Build
+client/build/
+server/dist/
+
+# Misc
+.DS_Store
+*.log
