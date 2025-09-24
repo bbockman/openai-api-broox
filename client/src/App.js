@@ -87,25 +87,25 @@ function App() {
           <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#d4d4d4', fontWeight: 600 }}>
             OpenAI API Broox Chat
           </Typography>
-          <Paper variant="outlined" sx={{ minHeight: 500, maxHeight: 700, overflow: 'auto', mb: 2, width: '100%', maxWidth: 900, background: '#252526', borderColor: '#333', boxShadow: '0 2px 8px #0008' }}>
+          <Paper variant="outlined" sx={{ minHeight: 500, maxHeight: 700, overflow: 'auto', mb: 2, width: '100%', maxWidth: 1100, background: '#252526', borderColor: '#333', boxShadow: '0 2px 12px #000a' }}>
             <List>
               {messages.filter(m => m.role !== 'system').map((msg, idx) => (
                 <ListItem key={idx} alignItems="flex-start" sx={{
                   background: msg.role === 'user' ? '#2d2d40' : '#23232e',
-                  borderRadius: 2,
-                  mb: 1,
-                  color: msg.role === 'user' ? '#e7e7e7' : '#d4d4d4',
-                  boxShadow: msg.role === 'user' ? '0 1px 4px #0004' : 'none',
+                  borderRadius: 3,
+                  mb: 1.5,
+                  color: '#e7e7e7',
+                  boxShadow: '0 2px 8px #0002',
+                  border: msg.role === 'assistant' ? '1px solid #6c3fc5' : '1px solid #222',
                 }}>
                   <ListItemText
-                    primary={<span style={{ color: msg.role === 'user' ? '#4fc3f7' : '#c792ea', fontWeight: 500 }}>{msg.role === 'user' ? 'You' : 'Assistant'}</span>}
+                    primary={<span style={{ color: msg.role === 'user' ? '#4fc3f7' : '#c792ea', fontWeight: 600, fontSize: 18 }}>{msg.role === 'user' ? 'You' : 'Assistant'}</span>}
                     secondary={
                       <>
                         {msg.role === 'assistant' ? (
                           <ReactMarkdown
                             components={{
                               code({node, inline, className, children, ...props}) {
-                                // Style for both inline and block code
                                 const baseStyle = {
                                   background: '#181a1b',
                                   color: '#dcdcaa',
@@ -125,15 +125,18 @@ function App() {
                                 );
                               },
                               p({node, ...props}) {
-                                return <p style={{ color: '#e7e7e7', margin: 0 }} {...props} />;
+                                return <p style={{ color: '#e7e7e7', margin: 0, fontSize: 16 }} {...props} />;
                               },
                               span({node, ...props}) {
                                 return <span style={{ color: '#e7e7e7' }} {...props} />;
+                              },
+                              li({node, ...props}) {
+                                return <li style={{ color: '#bdbdbd', fontSize: 15, marginLeft: 16 }} {...props} />;
                               }
                             }}
                           >{msg.content}</ReactMarkdown>
                         ) : (
-                          <span style={{ color: '#e7e7e7' }}>{msg.content}</span>
+                          <span style={{ color: '#e7e7e7', fontSize: 16 }}>{msg.content}</span>
                         )}
                         {msg.attachments && msg.attachments.map((att, i) => (
                           <Box key={i} sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
@@ -152,7 +155,7 @@ function App() {
           {attachedFile && (
             <Box sx={{
               width: '100%',
-              maxWidth: 900,
+              maxWidth: 1100,
               display: 'flex',
               alignItems: 'center',
               mb: 1,
@@ -163,29 +166,54 @@ function App() {
               <Button size="small" onClick={() => { setAttachedFile(null); setAttachedFileName(''); setAttachedFileContent(''); }} sx={{ ml: 1 }}>Remove</Button>
             </Box>
           )}
-          <TextField
-            label="Type your message..."
-            multiline
-            minRows={1}
-            maxRows={3}
-            fullWidth
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={loading}
-            sx={{
-              mb: 2,
-              maxWidth: 900,
-              background: '#23232e',
-              borderRadius: 2,
-              '& .MuiInputBase-input': { color: '#d4d4d4' },
-              '& .MuiInputLabel-root': { color: '#b0b0b0' },
-              '& .MuiOutlinedInput-notchedOutline': { borderColor: '#333' },
-            }}
-          />
-          <Button variant="contained" onClick={handleSend} disabled={loading || !input.trim()} sx={{ maxWidth: 900, alignSelf: 'flex-end', background: '#007acc', color: '#fff', '&:hover': { background: '#005fa3' } }}>
-            Send
-          </Button>
+          <Box sx={{ width: '100%', maxWidth: 700, display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: 2, mb: 2 }}>
+            <TextField
+              label="Type your message..."
+              multiline
+              minRows={1}
+              maxRows={3}
+              fullWidth
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={loading}
+              sx={{
+                background: '#23232e',
+                borderRadius: 2,
+                '& .MuiInputBase-input': { color: '#d4d4d4' },
+                '& .MuiInputLabel-root': { color: '#b0b0b0' },
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#333' },
+              }}
+            />
+            <Button
+              variant="outlined"
+              onClick={handleSend}
+              disabled={loading || !input.trim()}
+              sx={{
+                height: 48,
+                minWidth: 90,
+                borderColor: (loading || !input.trim()) ? '#888' : '#007acc',
+                color: (loading || !input.trim()) ? '#bbb' : '#007acc',
+                background: (loading || !input.trim()) ? 'rgba(255,255,255,0.06)' : 'transparent',
+                fontWeight: 600,
+                opacity: (loading || !input.trim()) ? 0.85 : 1,
+                letterSpacing: 1,
+                '&.Mui-disabled': {
+                  borderColor: '#888',
+                  color: '#bbb',
+                  background: 'rgba(255,255,255,0.06)',
+                  opacity: 0.85,
+                },
+                '&:hover': {
+                  borderColor: '#005fa3',
+                  background: '#23232e',
+                  color: '#005fa3',
+                },
+              }}
+            >
+              Send
+            </Button>
+          </Box>
         </Box>
       </Box>
     </>
