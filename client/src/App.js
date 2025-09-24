@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, CssBaseline, Box, Typography, TextField, Button, Paper, List, ListItem, ListItemText, CircularProgress } from '@mui/material';
+import { Container, CssBaseline, Box, Typography, TextField, Button, Paper, List, ListItem, ListItemText, CircularProgress, Slider } from '@mui/material';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 
@@ -10,6 +10,7 @@ function App() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [temperature, setTemperature] = useState(1);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -20,6 +21,7 @@ function App() {
     try {
       const res = await axios.post('/api/chat', {
         messages: newMessages.filter(m => m.role !== 'system'),
+        temperature
       });
       const reply = res.data.choices?.[0]?.message?.content || 'No response.';
       setMessages([...newMessages, { role: 'assistant', content: reply }]);
@@ -63,6 +65,18 @@ function App() {
             </List>
             {loading && <Box textAlign="center" my={2}><CircularProgress size={24} /></Box>}
           </Paper>
+          <Box sx={{ mb: 2 }}>
+            <Typography gutterBottom>Temperature: {temperature}</Typography>
+            <Slider
+              value={temperature}
+              min={0}
+              max={2}
+              step={0.01}
+              onChange={(_, v) => setTemperature(Number(v))}
+              valueLabelDisplay="auto"
+              disabled={loading}
+            />
+          </Box>
           <TextField
             label="Type your message..."
             multiline
