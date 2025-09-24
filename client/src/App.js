@@ -79,31 +79,66 @@ function App() {
   return (
     <>
       <CssBaseline />
-      <Box sx={{ display: 'flex', height: '100vh' }}>
-  <Sidebar temperature={temperature} setTemperature={setTemperature} charLimit={charLimit} setCharLimit={setCharLimit}>
+      <Box sx={{ display: 'flex', height: '100vh', background: '#1e1e1e' }}>
+        <Sidebar temperature={temperature} setTemperature={setTemperature} charLimit={charLimit} setCharLimit={setCharLimit}>
           <FileBrowser onFileSelect={handleFileSelect} selectedFile={attachedFile} />
         </Sidebar>
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', p: 3 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', p: 3, background: '#1e1e1e' }}>
+          <Typography variant="h4" component="h1" gutterBottom sx={{ color: '#d4d4d4', fontWeight: 600 }}>
             OpenAI API Broox Chat
           </Typography>
-          <Paper variant="outlined" sx={{ minHeight: 300, maxHeight: 400, overflow: 'auto', mb: 2, width: '100%', maxWidth: 700 }}>
+          <Paper variant="outlined" sx={{ minHeight: 500, maxHeight: 700, overflow: 'auto', mb: 2, width: '100%', maxWidth: 900, background: '#252526', borderColor: '#333', boxShadow: '0 2px 8px #0008' }}>
             <List>
               {messages.filter(m => m.role !== 'system').map((msg, idx) => (
-                <ListItem key={idx} alignItems="flex-start">
+                <ListItem key={idx} alignItems="flex-start" sx={{
+                  background: msg.role === 'user' ? '#2d2d40' : '#23232e',
+                  borderRadius: 2,
+                  mb: 1,
+                  color: msg.role === 'user' ? '#e7e7e7' : '#d4d4d4',
+                  boxShadow: msg.role === 'user' ? '0 1px 4px #0004' : 'none',
+                }}>
                   <ListItemText
-                    primary={msg.role === 'user' ? 'You' : 'Assistant'}
+                    primary={<span style={{ color: msg.role === 'user' ? '#4fc3f7' : '#c792ea', fontWeight: 500 }}>{msg.role === 'user' ? 'You' : 'Assistant'}</span>}
                     secondary={
                       <>
                         {msg.role === 'assistant' ? (
-                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                          <ReactMarkdown
+                            components={{
+                              code({node, inline, className, children, ...props}) {
+                                // Style for both inline and block code
+                                const baseStyle = {
+                                  background: '#181a1b',
+                                  color: '#dcdcaa',
+                                  borderRadius: 8,
+                                  fontFamily: 'Fira Mono, Menlo, monospace',
+                                  fontSize: 15,
+                                  padding: inline ? '2px 6px' : '16px',
+                                  margin: inline ? 0 : '8px 0',
+                                  display: inline ? 'inline' : 'block',
+                                  overflowX: 'auto',
+                                  boxShadow: inline ? undefined : '0 2px 8px #000a',
+                                  border: '1px solid #333',
+                                  whiteSpace: inline ? 'pre' : 'pre-wrap',
+                                };
+                                return (
+                                  <code style={baseStyle} {...props}>{children}</code>
+                                );
+                              },
+                              p({node, ...props}) {
+                                return <p style={{ color: '#e7e7e7', margin: 0 }} {...props} />;
+                              },
+                              span({node, ...props}) {
+                                return <span style={{ color: '#e7e7e7' }} {...props} />;
+                              }
+                            }}
+                          >{msg.content}</ReactMarkdown>
                         ) : (
-                          msg.content
+                          <span style={{ color: '#e7e7e7' }}>{msg.content}</span>
                         )}
                         {msg.attachments && msg.attachments.map((att, i) => (
                           <Box key={i} sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                            <AttachFileIcon fontSize="small" sx={{ mr: 0.5 }} />
-                            <Typography variant="caption">{att.name}</Typography>
+                            <AttachFileIcon fontSize="small" sx={{ mr: 0.5, color: '#b0b0b0' }} />
+                            <Typography variant="caption" sx={{ color: '#b0b0b0' }}>{att.name}</Typography>
                           </Box>
                         ))}
                       </>
@@ -115,31 +150,40 @@ function App() {
             {loading && <Box textAlign="center" my={2}><CircularProgress size={24} /></Box>}
           </Paper>
           {attachedFile && (
-            <Box sx={{ mb: 2, width: '100%', maxWidth: 700 }}>
-              <Divider />
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <AttachFileIcon fontSize="small" sx={{ mr: 0.5 }} />
-                <Typography variant="caption">Attached: {attachedFileName}</Typography>
-                <Button size="small" onClick={() => { setAttachedFile(null); setAttachedFileName(''); setAttachedFileContent(''); }} sx={{ ml: 1 }}>Remove</Button>
-              </Box>
-              <Paper variant="outlined" sx={{ p: 1, maxHeight: 120, overflow: 'auto', whiteSpace: 'pre', fontFamily: 'monospace', fontSize: 13, mt: 1 }}>
-                {attachedFileContent}
-              </Paper>
+            <Box sx={{
+              width: '100%',
+              maxWidth: 900,
+              display: 'flex',
+              alignItems: 'center',
+              mb: 1,
+              background: 'transparent',
+            }}>
+              <AttachFileIcon fontSize="small" sx={{ mr: 0.5, color: '#b0b0b0' }} />
+              <Typography variant="caption" sx={{ color: '#b0b0b0' }}>Attached: {attachedFileName}</Typography>
+              <Button size="small" onClick={() => { setAttachedFile(null); setAttachedFileName(''); setAttachedFileContent(''); }} sx={{ ml: 1 }}>Remove</Button>
             </Box>
           )}
           <TextField
             label="Type your message..."
             multiline
-            minRows={2}
-            maxRows={4}
+            minRows={1}
+            maxRows={3}
             fullWidth
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={loading}
-            sx={{ mb: 2, maxWidth: 700 }}
+            sx={{
+              mb: 2,
+              maxWidth: 900,
+              background: '#23232e',
+              borderRadius: 2,
+              '& .MuiInputBase-input': { color: '#d4d4d4' },
+              '& .MuiInputLabel-root': { color: '#b0b0b0' },
+              '& .MuiOutlinedInput-notchedOutline': { borderColor: '#333' },
+            }}
           />
-          <Button variant="contained" onClick={handleSend} disabled={loading || !input.trim()} sx={{ maxWidth: 700, alignSelf: 'flex-end' }}>
+          <Button variant="contained" onClick={handleSend} disabled={loading || !input.trim()} sx={{ maxWidth: 900, alignSelf: 'flex-end', background: '#007acc', color: '#fff', '&:hover': { background: '#005fa3' } }}>
             Send
           </Button>
         </Box>
